@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دفتر نمرات هوشمند دبیران | M.Zameni</title>
+<style>
+:root{--blue:#175cd3;--blue2:#eaf2ff;--ink:#172b4d;--muted:#667085;--line:#d9e2f0;--bg:#f5f8fd;--white:#fff;--red:#b42318;--green:#067647}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,"Segoe UI",sans-serif;line-height:1.8}
+header{background:linear-gradient(120deg,#1646a0,#2675e8);color:white;padding:20px max(16px,calc((100% - 1200px)/2));}
+header h1{margin:0;font-size:clamp(1.25rem,3vw,2rem)}header p{margin:4px 0 0;opacity:.9}
+main{max-width:1200px;margin:20px auto;padding:0 14px 35px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 4px 16px #183b7010}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1}label{font-size:.9rem;font-weight:bold}input,select,button{font:inherit;border-radius:9px;padding:9px 11px;border:1px solid #c6d2e2;background:#fff;color:var(--ink);min-width:0}input:focus,select:focus{outline:2px solid #a8c7ff;border-color:var(--blue)}button{cursor:pointer;background:var(--blue);color:white;border:0;font-weight:bold}button:hover{filter:brightness(.95)}button.secondary{background:#eaf0f8;color:#23436e;border:1px solid #d4dfed}button.danger{background:#b42318}button.small{padding:4px 8px;font-size:.82rem}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.muted{color:var(--muted);font-size:.9rem}.status{padding:10px 12px;border-radius:10px;background:#eef4ff;color:#174ea6;margin-bottom:12px;display:none}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.tabs button{background:#e8eef8;color:#29476f}.tabs button.active{background:var(--blue);color:white}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}.stat{background:#f5f8ff;border:1px solid #e0e9f8;border-radius:12px;padding:12px}.stat strong{display:block;font-size:1.45rem;color:var(--blue)}.stat span{font-size:.86rem;color:#53657e}
+.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:720px;background:white}th,td{border:1px solid var(--line);padding:8px;text-align:center}th{background:#eef4ff;white-space:nowrap}td input{width:75px;text-align:center;padding:5px}td .nameinput{width:145px;text-align:right}.empty{text-align:center;padding:22px;color:var(--muted)}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px}.section-title h2{font-size:1.15rem;margin:0}.badge{display:inline-block;background:#eaf2ff;color:#175cd3;padding:2px 8px;border-radius:30px;font-size:.8rem}
+.chartgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.chartbox{border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}.chartbox h3{font-size:1rem;margin:0 0 8px}.chartbox canvas{width:100%;height:240px;display:block}.notice{background:#fff7e6;border:1px solid #f5d58b;padding:10px;border-radius:10px;color:#7a4d00}.footer{text-align:center;color:var(--muted);padding:20px 10px;font-size:.85rem}
+@media(max-width:600px){header{padding:17px 14px}main{margin-top:12px}.card{padding:12px}.field{min-width:125px}.actions button{flex:1}.chartbox canvas{height:220px}}
+
+#printAnalysisBtn{background:#067647}
+.print-only{display:none}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ body{background:#fff;color:#111;font-size:10pt}
+ header,.tabs,#status,.no-print,.footer{display:none!important}
+ main{max-width:none;margin:0;padding:0}
+ body.print-analysis #analysisPanel{display:block!important;border:0;box-shadow:none;padding:0;margin:0}
+ body.print-analysis main>section:not(#analysisPanel){display:none!important}
+ body.print-analysis #analysisPanel .section-title h2{font-size:16pt;text-align:center;width:100%}
+ body.print-analysis .print-only{display:block!important}
+ body.print-analysis .chartgrid{grid-template-columns:1fr 1fr;gap:8px}
+ body.print-analysis .chartbox{break-inside:avoid;border:1px solid #777}
+ body.print-analysis .chartbox canvas{height:180px;max-height:180px}
+ body.print-analysis .stats{grid-template-columns:repeat(4,1fr);gap:5px}
+ body.print-analysis .stat{border:1px solid #aaa;background:#fff;padding:5px}
+ body.print-analysis .stat strong{font-size:12pt;color:#111}
+ body.print-analysis #analysisNote{color:#111}
+ body.print-analysis .report-extra{margin-top:12px;border:1px solid #555;padding:8px;min-height:115px;break-inside:avoid}
+ body.print-analysis .signature{display:flex;justify-content:space-between;margin-top:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>دفتر نمرات هوشمند دبیران</h1>
+  <p>مدیریت کلاس‌ها، ثبت نمرات و تحلیل عملکرد آزمون‌ها</p>
+  <p><b>سازنده: M.Zameni</b></p>
+</header>
+<main>
+<div id="status" class="status" role="status"></div>
+<section class="card">
+ <div class="section-title"><h2>مشخصات و مدیریت کلاس</h2><span class="badge">نسخه مستقل و آفلاین</span></div>
+ <div class="row">
+  <div class="field"><label for="teacherName">نام دبیر</label><input id="teacherName" placeholder="نام دبیر"></div>
+  <div class="field"><label for="classSelect">کلاس انتخاب‌شده</label><select id="classSelect"></select></div>
+  <div class="field"><label for="newClassName">نام کلاس جدید</label><input id="newClassName" placeholder="مثلاً هفتم الف"></div>
+ </div>
+ <div class="actions">
+  <button id="addClass">ایجاد کلاس</button><button class="secondary" id="renameClass">تغییر نام کلاس</button><button class="danger" id="deleteClass">حذف کلاس</button>
+ </div>
+</section>
+<div class="tabs">
+ <button class="active" data-tab="studentsPanel">دانش‌آموزان و نمرات</button>
+ <button data-tab="examPanel">مدیریت آزمون‌ها</button>
+ <button data-tab="analysisPanel">تحلیل آزمون</button>
+ <button data-tab="reportPanel">گزارش کلی کلاس</button>
+ <button data-tab="backupPanel">پشتیبان‌گیری</button>
+</div>
+<section class="card" id="studentsPanel">
+ <div class="section-title"><h2>فهرست دانش‌آموزان و دفتر نمرات</h2><span id="studentCount" class="badge">۰ دانش‌آموز</span></div>
+ <div class="row">
+  <div class="field"><label for="studentName">نام و نام خانوادگی</label><input id="studentName" placeholder="نام دانش‌آموز"></div>
+  <div class="field"><label for="studentCode">شماره/شناسه (اختیاری)</label><input id="studentCode" placeholder="شماره دانش‌آموز"></div>
+  <button id="addStudent">افزودن دانش‌آموز</button>
+ </div>
+ <p class="muted">برای هر آزمون نمره‌ای از ۰ تا ۲۰ وارد کنید. برای غیبت، گزینه «غایب» را انتخاب کنید؛ خانه خالی یعنی نمره هنوز ثبت نشده است.</p>
+ <div class="tablewrap" id="gradeTable"></div>
+</section>
+<section class="card" id="examPanel" hidden>
+ <div class="section-title"><h2>مدیریت آزمون‌ها</h2></div>
+ <div class="row">
+  <div class="field"><label for="examTitle">عنوان آزمون</label><input id="examTitle" placeholder="مثلاً آزمون فصل اول"></div>
+  <div class="field"><label for="examDate">تاریخ آزمون</label><input id="examDate" type="date"></div>
+  <button id="addExam">افزودن آزمون</button>
+ </div>
+ <div id="examList"></div>
+</section>
+<section class="card" id="analysisPanel" hidden>
+ <div class="section-title"><h2>تحلیل اختصاصی آزمون</h2><button id="printAnalysisBtn" class="no-print">چاپ / ذخیره تحلیل به PDF</button></div>
+ <div id="printHeader" class="print-only"></div>
+ <div class="row"><div class="field"><label for="analysisExam">انتخاب آزمون</label><select id="analysisExam"></select></div><button id="refreshAnalysis">نمایش تحلیل</button></div>
+ <div id="analysisStats" class="stats" style="margin-top:14px"></div>
+ <div class="chartgrid" style="margin-top:14px">
+  <div class="chartbox"><h3>توزیع نمرات دانش‌آموزان</h3><canvas id="barChart" width="600" height="300"></canvas></div>
+  <div class="chartbox"><h3>گروه‌بندی عملکرد (از نمرات ثبت‌شده)</h3><canvas id="pieChart" width="600" height="300"></canvas></div>
+ </div>
+ <div id="analysisNote" class="muted" style="margin-top:10px"></div>
+ <div class="print-only report-extra"><b>تحلیل نتایج و پیشنهادهای کاربردی دبیر:</b><br><br>........................................................................................................................................<br><br>........................................................................................................................................</div>
+ <div class="print-only report-extra"><b>نظر شورای دبیران:</b><br><br>........................................................................................................................................<br><br>........................................................................................................................................<div class="signature"><span>تاریخ و امضای دبیر: ....................</span><span>تاریخ و امضای مدیر: ....................</span></div></div>
+</section>
+<section class="card" id="reportPanel" hidden>
+ <div class="section-title"><h2>گزارش کلی کلاس</h2></div>
+ <div id="classReport"></div>
+</section>
+<section class="card" id="backupPanel" hidden>
+ <div class="section-title"><h2>پشتیبان‌گیری و خروجی</h2></div>
+ <p class="muted">اطلاعات این برنامه در حافظه مرورگر همین دستگاه ذخیره می‌شود. فایل HTML اولیه شامل داده‌های شما نیست. برای انتقال اطلاعات، از پشتیبان JSON استفاده کنید.</p>
+ <div class="actions"><button id="exportJson">دانلود پشتیبان JSON</button><button id="importJsonBtn" class="secondary">بازیابی از JSON</button><input type="file" id="importJson" accept=".json,application/json" hidden><button id="exportCsv" class="secondary">خروجی دفتر نمرات CSV</button><button id="printPage" class="secondary">چاپ صفحه</button><button id="clearAll" class="danger">پاک‌کردن تمام اطلاعات</button></div>
+</section>
+<div class="footer">M.Zameni · دفتر نمرات هوشمند دبیران · اطلاعات به‌صورت محلی در مرورگر ذخیره می‌شود.</div>
+</main>
+<script>
+"use strict";
+const STORE_KEY="M.Zameni.smartGradebook.v1";
+const $=id=>document.getElementById(id);
+const fa=n=>Number(n).toLocaleString("fa-IR",{maximumFractionDigits:2});
+const today=()=>new Date().toISOString().slice(0,10);
+let state={teacher:"",classes:[],selectedClassId:null};
+function uid(){return "id-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+function activeClass(){return state.classes.find(c=>c.id===state.selectedClassId)||null}
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state))}catch(e){notify("ذخیره خودکار ممکن نشد؛ از بخش پشتیبان‌گیری خروجی بگیرید.",true)}}
+function load(){try{const raw=localStorage.getItem(STORE_KEY);if(raw){const x=JSON.parse(raw);if(x&&Array.isArray(x.classes)){state=x;state.teacher=state.teacher||"";state.selectedClassId=state.selectedClassId||state.classes[0]?.id||null}}}catch(e){state={teacher:"",classes:[],selectedClassId:null}}
+if(!state.classes.length){const c={id:uid(),name:"کلاس نمونه",students:[],exams:[]};state.classes.push(c);state.selectedClassId=c.id;save()}}
+function notify(msg,error=false){const el=$("status");el.textContent=msg;el.style.display="block";el.style.background=error?"#fff0ef":"#eef4ff";el.style.color=error?"#b42318":"#174ea6";clearTimeout(notify.timer);notify.timer=setTimeout(()=>el.style.display="none",3500)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+function renderAll(){ $("teacherName").value=state.teacher||"";renderClassSelect();renderStudents();renderExams();renderAnalysisSelect();renderReport();renderAnalysis()}
+function renderClassSelect(){const sel=$("classSelect");sel.innerHTML="";state.classes.forEach(c=>{const o=document.createElement("option");o.value=c.id;o.textContent=c.name;sel.append(o)});if(state.selectedClassId)sel.value=state.selectedClassId}
+function renderStudents(){const c=activeClass();const wrap=$("gradeTable");if(!c){wrap.innerHTML='<div class="empty">ابتدا یک کلاس ایجاد کنید.</div>';$("studentCount").textContent="۰ دانش‌آموز";return}
+$("studentCount").textContent=fa(c.students.length)+" دانش‌آموز";
+if(!c.students.length){wrap.innerHTML='<div class="empty">هنوز دانش‌آموزی ثبت نشده است.</div>';return}
+let html='<table><thead><tr><th>ردیف</th><th>نام دانش‌آموز</th><th>شناسه</th>';
+c.exams.forEach(e=>html+=`<th>${esc(e.title)}<br><small>${esc(e.date||"بدون تاریخ")}</small></th>`);
+html+='<th>عملیات</th></tr></thead><tbody>';
+c.students.forEach((s,i)=>{html+=`<tr><td>${fa(i+1)}</td><td><input class="nameinput" aria-label="نام دانش‌آموز" data-name="${s.id}" value="${esc(s.name)}"></td><td><input style="width:90px" aria-label="شناسه" data-code="${s.id}" value="${esc(s.code||"")}"></td>`;
+c.exams.forEach(e=>{const v=s.grades?.[e.id]??"";html+=`<td><select aria-label="وضعیت نمره ${esc(s.name)}" data-grade="${s.id}" data-exam="${e.id}"><option value="" ${v===""?"selected":""}>ثبت نشده</option><option value="absent" ${v==="absent"?"selected":""}>غایب</option>${Array.from({length:201},(_,j)=>j/10).map(n=>`<option value="${n}" ${String(v)===String(n)?"selected":""}>${fa(n)}</option>`).join("")}</select></td>`});
+html+=`<td><button class="danger small" data-delete-student="${s.id}">حذف</button></td></tr>`});
+html+="</tbody></table>";wrap.innerHTML=html}
+function renderExams(){const c=activeClass(),el=$("examList");if(!c||!c.exams.length){el.innerHTML='<div class="empty">هنوز آزمونی تعریف نشده است.</div>';return}
+el.innerHTML=c.exams.map(e=>`<div class="card" style="margin-top:10px;margin-bottom:8px"><div class="row"><div class="field"><label>عنوان آزمون</label><input data-exam-title="${e.id}" value="${esc(e.title)}"></div><div class="field"><label>تاریخ</label><input type="date" data-exam-date="${e.id}" value="${esc(e.date||"")}"></div><button class="secondary small" data-analyze="${e.id}">تحلیل آزمون</button><button class="danger small" data-delete-exam="${e.id}">حذف آزمون</button></div></div>`).join("")}
+function renderAnalysisSelect(){const c=activeClass(),sel=$("analysisExam");sel.innerHTML="";if(c)c.exams.forEach(e=>{const o=document.createElement("option");o.value=e.id;o.textContent=e.title+" — "+(e.date||"بدون تاریخ");sel.append(o)});if(!c||!c.exams.length)sel.innerHTML='<option value="">آزمونی ثبت نشده</option>'}
+function statsFor(c,e){const vals=c.students.map(s=>s.grades?.[e.id]??"");const nums=vals.filter(v=>v!==""&&v!=="absent").map(Number).filter(Number.isFinite);const absent=vals.filter(v=>v==="absent").length,missing=vals.filter(v=>v==="").length;const gt15=nums.filter(n=>n>15).length,mid=nums.filter(n=>n>=10&&n<=15).length,low=nums.filter(n=>n<10).length;return {total:c.students.length,recorded:nums.length,mean:nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:null,gt15,mid,low,absent,missing,percent:n=>nums.length?100*n/nums.length:0,nums}}
+function statCard(label,value,sub=""){return `<div class="stat"><span>${label}</span><strong>${value}</strong>${sub?`<span>${sub}</span>`:""}</div>`}
+function renderAnalysis(){const c=activeClass(),eid=$("analysisExam").value,e=c?.exams.find(x=>x.id===eid),stats=$("analysisStats");if(!c||!e){$("printHeader").innerHTML="";stats.innerHTML='<div class="empty">برای مشاهده تحلیل، ابتدا آزمون و نمرات آن را ثبت کنید.</div>';clearCanvas("barChart");clearCanvas("pieChart");$("analysisNote").textContent="";return}
+const s=statsFor(c,e);$("printHeader").innerHTML=`<div style="text-align:center;font-weight:bold;font-size:13pt;margin:8px 0">نمون برگ تجزیه و تحلیل نتایج ارزشیابی جهت ارائه در شورای دبیران</div><div style="display:flex;justify-content:space-between;border-bottom:1px solid #777;padding:6px 0"><span>نام دبیر: ${esc(state.teacher||"................")}</span><span>نام کلاس: ${esc(c.name)}</span></div><div style="display:flex;justify-content:space-between;padding:6px 0"><span>نام درس: ریاضی</span><span>عنوان آزمون: ${esc(e.title)}</span><span>تاریخ: ${esc(e.date||"—")}</span></div>`;stats.innerHTML=statCard("کل دانش‌آموزان",fa(s.total))+statCard("نمرات ثبت‌شده",fa(s.recorded))+statCard("میانگین آزمون",s.mean===null?"بدون داده":fa(s.mean.toFixed(2)))+statCard("بالاتر از ۱۵",fa(s.gt15),fa(s.percent(s.gt15).toFixed(1))+"٪")+statCard("از ۱۰ تا ۱۵",fa(s.mid),fa(s.percent(s.mid).toFixed(1))+"٪")+statCard("کمتر از ۱۰",fa(s.low),fa(s.percent(s.low).toFixed(1))+"٪")+statCard("غایبان",fa(s.absent))+statCard("ثبت‌نشده",fa(s.missing));
+$("analysisNote").textContent="درصد گروه‌ها بر پایه "+fa(s.recorded)+" نمره ثبت‌شده محاسبه شده است. غایبان و نمرات ثبت‌نشده در میانگین و درصد گروه‌ها محاسبه نمی‌شوند.";
+drawBars("barChart",c,e);drawPie("pieChart",[s.gt15,s.mid,s.low],["بالاتر از ۱۵","۱۰ تا ۱۵","کمتر از ۱۰"])}
+function clearCanvas(id){const can=$(id),ctx=can.getContext("2d");ctx.clearRect(0,0,can.width,can.height);ctx.fillStyle="#667085";ctx.font="16px Tahoma";ctx.textAlign="center";ctx.fillText("داده‌ای برای نمایش وجود ندارد",can.width/2,can.height/2)}
+function drawBars(id,c,e){const can=$(id),ctx=can.getContext("2d");ctx.clearRect(0,0,can.width,can.height);const entries=c.students.map(s=>({name:s.name,val:s.grades?.[e.id]})).filter(x=>x.val!==""&&x.val!=="absent"&&Number.isFinite(Number(x.val)));if(!entries.length){clearCanvas(id);return}const w=can.width,h=can.height,pad=45,base=h-45,plotH=h-85;ctx.strokeStyle="#ccd6e5";ctx.beginPath();ctx.moveTo(pad,20);ctx.lineTo(pad,base);ctx.lineTo(w-10,base);ctx.stroke();ctx.font="13px Tahoma";ctx.fillStyle="#52637a";ctx.textAlign="right";[0,5,10,15,20].forEach(n=>{const y=base-plotH*n/20;ctx.fillText(n,pad-8,y+4);ctx.strokeStyle="#e8edf5";ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-10,y);ctx.stroke()});const gap=5,bw=Math.max(4,(w-pad-20)/entries.length-gap);entries.forEach((x,i)=>{const x0=pad+8+i*((w-pad-20)/entries.length),bh=plotH*Number(x.val)/20;ctx.fillStyle=Number(x.val)<10?"#f79009":Number(x.val)>15?"#1570ef":"#12b76a";ctx.fillRect(x0,base-bh,bw,bh);if(entries.length<=18){ctx.save();ctx.translate(x0+bw/2,base+8);ctx.rotate(-Math.PI/4);ctx.textAlign="right";ctx.fillStyle="#344054";ctx.font="11px Tahoma";ctx.fillText(x.name.slice(0,12),0,0);ctx.restore()}})}
+function drawPie(id,values,labels){const can=$(id),ctx=can.getContext("2d");ctx.clearRect(0,0,can.width,can.height);const total=values.reduce((a,b)=>a+b,0);if(!total){clearCanvas(id);return}const colors=["#1570ef","#12b76a","#f79009"],cx=can.width*.38,cy=can.height*.48,r=Math.min(can.width*.26,can.height*.36);let angle=-Math.PI/2;values.forEach((v,i)=>{if(!v)return;const next=angle+v/total*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,next);ctx.closePath();ctx.fillStyle=colors[i];ctx.fill();angle=next});ctx.font="14px Tahoma";ctx.textAlign="right";labels.forEach((lab,i)=>{const y=75+i*55;ctx.fillStyle=colors[i];ctx.fillRect(can.width*.68,y-12,14,14);ctx.fillStyle="#344054";ctx.fillText(lab,can.width*.66,y);ctx.textAlign="left";ctx.fillText(fa(values[i])+" ("+fa((values[i]/total*100).toFixed(1))+"٪)",can.width*.68+20,y);ctx.textAlign="right"})}
+function renderReport(){const c=activeClass(),el=$("classReport");if(!c){el.innerHTML="کلاسی انتخاب نشده است.";return}if(!c.exams.length){el.innerHTML='<div class="empty">برای این کلاس هنوز آزمونی ثبت نشده است.</div>';return}el.innerHTML='<div class="tablewrap"><table><thead><tr><th>آزمون</th><th>تاریخ</th><th>تعداد نمره</th><th>میانگین</th><th>بالاتر از ۱۵</th><th>۱۰ تا ۱۵</th><th>کمتر از ۱۰</th><th>غایب</th><th>ثبت‌نشده</th><th>تحلیل</th></tr></thead><tbody>'+c.exams.map(e=>{const s=statsFor(c,e);return `<tr><td>${esc(e.title)}</td><td>${esc(e.date||"—")}</td><td>${fa(s.recorded)}</td><td>${s.mean===null?"بدون داده":fa(s.mean.toFixed(2))}</td><td>${fa(s.gt15)} (${fa(s.percent(s.gt15).toFixed(1))}٪)</td><td>${fa(s.mid)} (${fa(s.percent(s.mid).toFixed(1))}٪)</td><td>${fa(s.low)} (${fa(s.percent(s.low).toFixed(1))}٪)</td><td>${fa(s.absent)}</td><td>${fa(s.missing)}</td><td><button class="small" data-analyze="${e.id}">مشاهده</button></td></tr>`}).join("")+'</tbody></table></div>'}
+function addClass(){const name=$("newClassName").value.trim();if(!name){notify("نام کلاس را وارد کنید.",true);return}const c={id:uid(),name,students:[],exams:[]};state.classes.push(c);state.selectedClassId=c.id;$("newClassName").value="";save();renderAll();notify("کلاس ایجاد شد.")}
+function addStudent(){const c=activeClass(),name=$("studentName").value.trim();if(!c){notify("ابتدا کلاس انتخاب کنید.",true);return}if(!name){notify("نام دانش‌آموز را وارد کنید.",true);return}const code=$("studentCode").value.trim();if(c.students.some(s=>s.name.trim().toLowerCase()===name.toLowerCase()||(code&&s.code===code))){notify("نام یا شناسه تکراری است.",true);return}c.students.push({id:uid(),name,code,grades:{}});$("studentName").value="";$("studentCode").value="";save();renderAll();notify("دانش‌آموز افزوده شد.")}
+function addExam(){const c=activeClass(),title=$("examTitle").value.trim(),date=$("examDate").value||"";if(!c){notify("ابتدا کلاس انتخاب کنید.",true);return}if(!title){notify("عنوان آزمون را وارد کنید.",true);return}c.exams.push({id:uid(),title,date});$("examTitle").value="";$("examDate").value="";save();renderAll();notify("آزمون افزوده شد.")}
+function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
+function exportCsv(){const c=activeClass();if(!c){notify("کلاسی انتخاب نشده است.",true);return}const rows=[["ردیف","نام","شناسه",...c.exams.map(e=>e.title+" ("+e.date+")")]];c.students.forEach((s,i)=>rows.push([i+1,s.name,s.code||"",...c.exams.map(e=>{const v=s.grades?.[e.id]??"";return v==="absent"?"غایب":v})]));download("M.Zameni_gradebook.csv","\uFEFF"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n"),"text/csv;charset=utf-8")}
+function analyzeExam(id){$("analysisExam").value=id;document.querySelector('[data-tab="analysisPanel"]').click();renderAnalysis()}
+$("addClass").addEventListener("click",addClass);
+$("renameClass").addEventListener("click",()=>{const c=activeClass();if(!c)return;const n=$("newClassName").value.trim();if(!n){notify("نام جدید کلاس را در کادر نام کلاس وارد کنید.",true);return}c.name=n;$("newClassName").value="";save();renderAll();notify("نام کلاس تغییر کرد.")});
+$("deleteClass").addEventListener("click",()=>{const c=activeClass();if(!c)return;if(!confirm("کلاس «"+c.name+"» و تمام نمرات آن حذف شود؟"))return;state.classes=state.classes.filter(x=>x.id!==c.id);if(!state.classes.length)state.classes.push({id:uid(),name:"کلاس جدید",students:[],exams:[]});state.selectedClassId=state.classes[0].id;save();renderAll();notify("کلاس حذف شد.")});
+$("classSelect").addEventListener("change",e=>{state.selectedClassId=e.target.value;save();renderAll()});
+$("teacherName").addEventListener("change",e=>{state.teacher=e.target.value.trim();save();notify("نام دبیر ذخیره شد.")});
+$("addStudent").addEventListener("click",addStudent);$("addExam").addEventListener("click",addExam);
+$("analysisExam").addEventListener("change",renderAnalysis);$("refreshAnalysis").addEventListener("click",renderAnalysis);
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));["studentsPanel","examPanel","analysisPanel","reportPanel","backupPanel"].forEach(id=>$(id).hidden=id!==b.dataset.tab);if(b.dataset.tab==="analysisPanel")renderAnalysis();if(b.dataset.tab==="reportPanel")renderReport()}));
+document.addEventListener("change",e=>{const c=activeClass();if(!c)return;const t=e.target;
+if(t.dataset.name){const s=c.students.find(x=>x.id===t.dataset.name);if(s){s.name=t.value.trim()||s.name;save();renderAll()}}
+else if(t.dataset.code){const s=c.students.find(x=>x.id===t.dataset.code);if(s){s.code=t.value.trim();save()}}
+else if(t.dataset.grade){const s=c.students.find(x=>x.id===t.dataset.grade),eid=t.dataset.exam;if(!s)return;const v=t.value;if(v===""){delete s.grades[eid]}else if(v==="absent"){s.grades[eid]="absent"}else{const n=Number(v);if(!Number.isFinite(n)||n<0||n>20){notify("نمره باید بین صفر تا ۲۰ باشد.",true);renderStudents();return}s.grades[eid]=n}save();renderAnalysis();renderReport()}
+else if(t.dataset.examTitle){const ex=c.exams.find(x=>x.id===t.dataset.examTitle);if(ex){ex.title=t.value.trim()||ex.title;save();renderAll()}}
+else if(t.dataset.examDate){const ex=c.exams.find(x=>x.id===t.dataset.examDate);if(ex){ex.date=t.value;save();renderAll()}}
+});
+document.addEventListener("click",e=>{const t=e.target,c=activeClass();if(!c)return;
+if(t.dataset.deleteStudent){if(!confirm("این دانش‌آموز حذف شود؟"))return;c.students=c.students.filter(s=>s.id!==t.dataset.deleteStudent);save();renderAll();notify("دانش‌آموز حذف شد.")}
+if(t.dataset.deleteExam){if(!confirm("آزمون و نمرات مربوط به آن حذف شود؟"))return;const id=t.dataset.deleteExam;c.exams=c.exams.filter(x=>x.id!==id);c.students.forEach(s=>delete s.grades[id]);save();renderAll();notify("آزمون حذف شد.")}
+if(t.dataset.analyze)analyzeExam(t.dataset.analyze);
+});
+$("exportJson").addEventListener("click",()=>download("M.Zameni_gradebook_backup.json",JSON.stringify(state,null,2),"application/json;charset=utf-8"));
+$("importJsonBtn").addEventListener("click",()=>$("importJson").click());
+$("importJson").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!x||!Array.isArray(x.classes)||!x.classes.every(c=>c.id&&Array.isArray(c.students)&&Array.isArray(c.exams)))throw Error("ساختار فایل معتبر نیست");if(!confirm("اطلاعات فعلی با نسخه پشتیبان جایگزین شود؟"))return;state=x;state.teacher=state.teacher||"";state.selectedClassId=state.selectedClassId||state.classes[0]?.id||null;save();renderAll();notify("نسخه پشتیبان بازیابی شد.")}catch(err){notify("فایل JSON معتبر نیست یا قابل خواندن نیست.",true)}finally{e.target.value=""}});
+$("exportCsv").addEventListener("click",exportCsv);$("printPage").addEventListener("click",()=>window.print());
+$("printAnalysisBtn").addEventListener("click",()=>{renderAnalysis();document.body.classList.add("print-analysis");setTimeout(()=>{window.print();},150)});
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-analysis"));
+$("clearAll").addEventListener("click",()=>{if(!confirm("تمام کلاس‌ها، دانش‌آموزان و نمرات این مرورگر پاک شوند؟ این کار برگشت‌پذیر نیست."))return;state={teacher:"",classes:[{id:uid(),name:"کلاس جدید",students:[],exams:[]}],selectedClassId:null};state.selectedClassId=state.classes[0].id;save();renderAll();notify("اطلاعات پاک شد.")});
+load();if(!$("examDate").value)$("examDate").value=today();renderAll();
+</script>
+</body>
+</html>
